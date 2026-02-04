@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uz.anvarovich.barber_personal_website_api.dto.resp_dto.WeeklyPlanRespDto;
-import uz.anvarovich.barber_personal_website_api.entity.time_slot.SlotStatus;
+import uz.anvarovich.barber_personal_website_api.entity.enums.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.projection.TimeSlotProjection;
 import uz.anvarovich.barber_personal_website_api.validator.WeeklyPlanValidator;
 

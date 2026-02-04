@@ -2,9 +2,9 @@ package uz.anvarovich.barber_personal_website_api.entity.time_slot;
 
 import jakarta.persistence.*;
 import lombok.*;
-import uz.anvarovich.barber_personal_website_api.entity.AdminBlock;
 import uz.anvarovich.barber_personal_website_api.entity.DailyPlan;
 import uz.anvarovich.barber_personal_website_api.entity.abs.BaseEntity;
+import uz.anvarovich.barber_personal_website_api.entity.enums.SlotStatus;
 
 import java.time.LocalTime;
 
@@ -27,5 +27,5 @@ public class TimeSlot extends BaseEntity {
    BOOKED slot:
   delete qilinmaydi
   o‘zgartirilmaydi
-  override qilinmaydi*/
+*/
 }

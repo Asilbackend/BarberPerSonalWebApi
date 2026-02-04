@@ -1,8 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
 
 import java.time.LocalDate;
 import java.util.List;

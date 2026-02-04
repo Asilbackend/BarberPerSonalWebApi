@@ -1,6 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.domain.booking_service;
 
-import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
 
 import java.time.LocalDate;
 import java.util.List;

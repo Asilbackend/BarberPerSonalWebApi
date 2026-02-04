@@ -1,7 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.validator;
 
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.SystemSettingDto;
-import uz.anvarovich.barber_personal_website_api.entity.time_slot.SlotStatus;
+import uz.anvarovich.barber_personal_website_api.entity.enums.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 
 import java.time.LocalDate;

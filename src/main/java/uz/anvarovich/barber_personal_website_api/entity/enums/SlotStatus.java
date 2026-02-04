@@ -1,4 +1,4 @@
-package uz.anvarovich.barber_personal_website_api.entity.time_slot;
+package uz.anvarovich.barber_personal_website_api.entity.enums;
 
 public enum SlotStatus {
     OPEN,

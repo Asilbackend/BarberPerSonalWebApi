@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.BookDto;
 import uz.anvarovich.barber_personal_website_api.dto.resp_dto.BookRespDto;
-import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.services.app.booking_service.BookingServiceApp;
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_service.BookingService;

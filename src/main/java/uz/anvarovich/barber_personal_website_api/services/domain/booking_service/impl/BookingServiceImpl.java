@@ -3,7 +3,7 @@ package uz.anvarovich.barber_personal_website_api.services.domain.booking_servic
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
 import uz.anvarovich.barber_personal_website_api.entity.booking.BookingStatus;
 import uz.anvarovich.barber_personal_website_api.entity.user.User;
 import uz.anvarovich.barber_personal_website_api.repository.BookingRepository;
