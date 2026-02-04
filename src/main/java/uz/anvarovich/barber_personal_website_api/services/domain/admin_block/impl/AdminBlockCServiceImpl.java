@@ -1,4 +1,4 @@
-package uz.anvarovich.barber_personal_website_api.services.domain.admin_block;
+package uz.anvarovich.barber_personal_website_api.services.domain.admin_block.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,7 @@ import uz.anvarovich.barber_personal_website_api.dto.AdminBlockDto;
 import uz.anvarovich.barber_personal_website_api.entity.AdminBlock;
 import uz.anvarovich.barber_personal_website_api.entity.DailyPlan;
 import uz.anvarovich.barber_personal_website_api.repository.AdminBlockRepository;
+import uz.anvarovich.barber_personal_website_api.services.domain.admin_block.AdminBlockCService;
 
 @Service
 @RequiredArgsConstructor
@@ -28,4 +29,10 @@ public class AdminBlockCServiceImpl implements AdminBlockCService {
         AdminBlock adminBlock = adminBlockRepository.findByDailyPlanId(dailyPlanId).orElseThrow();
         adminBlockRepository.delete(adminBlock);
     }
+
+    @Override
+    public AdminBlock findByDailyId(Long dailyId) {
+        return adminBlockRepository.findByDailyPlanId(dailyId).orElseThrow();
+    }
+
 }

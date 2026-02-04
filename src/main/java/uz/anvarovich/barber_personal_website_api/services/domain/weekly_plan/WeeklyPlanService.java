@@ -1,8 +1,15 @@
-package uz.anvarovich.barber_personal_website_api.services.weekly_plan;
+package uz.anvarovich.barber_personal_website_api.services.domain.weekly_plan;
 
-import uz.anvarovich.barber_personal_website_api.dto.req_dto.WeeklyPlanDto;
+import uz.anvarovich.barber_personal_website_api.entity.WeeklyPlan;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 public interface WeeklyPlanService {
+    Optional<WeeklyPlan> findLastWeek();
 
-    void createNew(WeeklyPlanDto weeklyPlanDto);
+    WeeklyPlan createWeeklyPlan(LocalDate newWeekStartDate);
+
+    boolean existsByWeekStartDate(LocalDate nextMonday);
+
 }

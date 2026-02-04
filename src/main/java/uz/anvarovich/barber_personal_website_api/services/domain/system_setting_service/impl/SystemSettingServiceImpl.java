@@ -1,47 +1,27 @@
-package uz.anvarovich.barber_personal_website_api.services.domain.system_setting_service;
+package uz.anvarovich.barber_personal_website_api.services.domain.system_setting_service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.SystemSettingDto;
-import uz.anvarovich.barber_personal_website_api.entity.DailyPlan;
 import uz.anvarovich.barber_personal_website_api.entity.SystemSettings;
-import uz.anvarovich.barber_personal_website_api.entity.time_slot.SlotStatus;
-import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.mapper.SystemSettingMapper;
-import uz.anvarovich.barber_personal_website_api.repository.BookingRepository;
 import uz.anvarovich.barber_personal_website_api.repository.SystemSettingsRepository;
-import uz.anvarovich.barber_personal_website_api.repository.TimeSlotRepository;
-import uz.anvarovich.barber_personal_website_api.services.domain.dailyPlan_service.DailyPlanService;
-import uz.anvarovich.barber_personal_website_api.services.domain.time_slote.TimeSlotService;
-import uz.anvarovich.barber_personal_website_api.services.domain.weekly_plan.WeeklyPlanService;
+import uz.anvarovich.barber_personal_website_api.services.domain.system_setting_service.SystemSettingService;
 import uz.anvarovich.barber_personal_website_api.validator.SystemSettingValidator;
-
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class SystemSettingServiceImpl implements SystemSettingService {
     private final SystemSettingsRepository systemSettingsRepository;
-    private final WeeklyPlanService weeklyPlanService;
-    private final DailyPlanService dailyPlanService;
-    private final TimeSlotService timeSlotService;
-    private final TimeSlotRepository timeSlotRepository;
-    private final BookingRepository bookingRepository;
 
     @Override
     @Transactional
     public void updateSystemSetting(SystemSettingDto systemSettingDto) {
-        /* systemSettingsRepository.deleteAll();*/
+        systemSettingsRepository.deleteAll();
         SystemSettingValidator.validate(systemSettingDto);
         SystemSettings entity = SystemSettingMapper.toEntity(systemSettingDto);
         systemSettingsRepository.save(entity);
-        /*updateAllRelatedPlansAfterSettingsChange();*/
     }
 
     @Override
@@ -50,8 +30,7 @@ public class SystemSettingServiceImpl implements SystemSettingService {
         return SystemSettingMapper.toDto(last);
     }
 
-    @Override
-    public SystemSettingDto getOld() {
+    /*public SystemSettingDto getOld() {
         List<SystemSettings> all = systemSettingsRepository.findAll();
         if (all.size() >= 2) {
             SystemSettings systemSettings = all.get(all.size() - 2);
@@ -59,8 +38,8 @@ public class SystemSettingServiceImpl implements SystemSettingService {
         }
         SystemSettings one = all.getFirst();
         return SystemSettingMapper.toDto(one);
-    }
-
+    }*/
+/*
     @Transactional
     public void updateAllRelatedPlansAfterSettingsChange() {
         SystemSettingDto current = getCurrent();
@@ -105,9 +84,9 @@ public class SystemSettingServiceImpl implements SystemSettingService {
     }
 
 
-    /**
+    *//**
      * Booking bo'lgan kunlarda faqat isOutsideSchedule ni belgilaymiz
-     */
+     *//*
     // boshqa threadda ham ishlasa boladi
     private void markOutOfSlots(DailyPlan dailyPlan, SystemSettingDto settings) {
         List<TimeSlot> slots = timeSlotService.findAllByDailyPlanId(dailyPlan.getId());
@@ -169,5 +148,5 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 
             current = current.plusMinutes(durationMinutes);
         }
-    }
+    }*/
 }

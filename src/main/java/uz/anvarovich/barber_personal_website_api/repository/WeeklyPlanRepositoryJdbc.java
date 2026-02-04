@@ -1,14 +1,13 @@
 package uz.anvarovich.barber_personal_website_api.repository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import uz.anvarovich.barber_personal_website_api.dto.resp_dto.WeeklyPlanRespDto;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.projection.TimeSlotProjection;
+import uz.anvarovich.barber_personal_website_api.validator.WeeklyPlanValidator;
 
-import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -16,102 +15,80 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class WeeklyPlanRepositoryClass {
-
+public class WeeklyPlanRepositoryJdbc {
     private final JdbcTemplate jdbcTemplate;
 
-    public WeeklyPlanRespDto getWeeklyPlan(LocalDate weekStartDate) {
-        LocalDate weekEndDate = weekStartDate.plusDays(6);
+    public WeeklyPlanRespDto getWeeklyPlan(LocalDate weekStartDate, int plusDays, boolean admin) {
+        WeeklyPlanValidator.validateStartDate(weekStartDate);
+        LocalDate weekEndDate = weekStartDate.plusDays(plusDays);
+
         String sql = """
-            SELECT 
-                all_dates.date as date,
-                dp.date as daily_plan_date,
-                dp.is_day_off,
-                ts.id as time_slot_id,
-                ts.start_time,
-                ts.end_time,
-                ts.slot_status,
-                ts.is_outside_schedule
-            FROM generate_series(?::date, ?::date, '1 day'::interval) AS all_dates(date)
-            LEFT JOIN daily_plan dp ON dp.date = all_dates.date::date
-            LEFT JOIN time_slot ts ON ts.daily_plan_id = dp.id
-            ORDER BY all_dates.date, ts.start_time NULLS LAST
-            """;
-        // LinkedHashMap with correct types
-        LinkedHashMap<LocalDate, DayDtoBuilder> dayBuilders = new LinkedHashMap<>();
+                SELECT 
+                    dp.date as date, 
+                    dp.is_day_off as dayOff, 
+                    ab.reason as dayOffReason,
+                    ts.id as timeSlotId, 
+                    ts.start_time as startTime, 
+                    ts.end_time as endTime, 
+                    ts.slot_status as slotStatus, 
+                    ts.is_outside_schedule as isOutsideSchedule
+                FROM daily_plan dp
+                JOIN weekly_plan wp ON dp.weekly_plan_id = wp.id
+                LEFT JOIN admin_block ab ON ab.daily_plan_id = dp.id
+                LEFT JOIN time_slot ts ON ts.daily_plan_id = dp.id
+                WHERE wp.week_start_date = ? 
+                AND dp.date BETWEEN ? AND ?
+                ORDER BY dp.date ASC, ts.start_time ASC
+                """;
 
-        jdbcTemplate.query(sql,
-                new Object[]{weekStartDate, weekEndDate},
-                (ResultSet rs) -> {
-                    LocalDate date = rs.getDate("date").toLocalDate();
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql,
+                weekStartDate, weekStartDate, weekEndDate);
 
-                    // Get or create day builder
-                    DayDtoBuilder dayBuilder = dayBuilders.computeIfAbsent(date,
-                            DayDtoBuilder::new);
+        // Agar ma'lumot topilmasa, bo'sh ro'yxat qaytaramiz
+        if (rows.isEmpty()) {
+            return new WeeklyPlanRespDto(Collections.emptyList());
+        }
 
-                    // Set day off status if daily plan exists
-                    if (rs.getObject("daily_plan_date") != null && rs.getObject("is_day_off") != null) {
-                        dayBuilder.setDayOff(rs.getBoolean("is_day_off"));
-                    }
+        // Ma'lumotlarni Date bo'yicha guruhlaymiz
+        Map<LocalDate, List<Map<String, Object>>> groupedByDate = rows.stream()
+                .collect(Collectors.groupingBy(
+                        row -> ((java.sql.Date) row.get("date")).toLocalDate(),
+                        LinkedHashMap::new, // Tartibni saqlash uchun
+                        Collectors.toList()
+                ));
 
-                    // Add time slot if exists
-                    Long timeSlotId = rs.getObject("time_slot_id") != null
-                            ? rs.getLong("time_slot_id")
-                            : null;
+        List<WeeklyPlanRespDto.DayDto> days = new ArrayList<>();
 
-                    if (timeSlotId != null) {
-                        TimeSlotProjectionImpl projection = new TimeSlotProjectionImpl(
-                                timeSlotId,
-                                rs.getTime("start_time") != null
-                                        ? rs.getTime("start_time").toLocalTime()
-                                        : null,
-                                rs.getTime("end_time") != null
-                                        ? rs.getTime("end_time").toLocalTime()
-                                        : null,
-                                rs.getString("slot_status") != null
-                                        ? SlotStatus.valueOf(rs.getString("slot_status"))
-                                        : null,
-                                rs.getObject("is_outside_schedule") != null
-                                        ? rs.getBoolean("is_outside_schedule")
-                                        : null
-                        );
-                        dayBuilder.addTimeSlot(projection);
-                    }
+        for (Map.Entry<LocalDate, List<Map<String, Object>>> entry : groupedByDate.entrySet()) {
+            List<TimeSlotProjection> slots = new ArrayList<>();
+
+            for (Map<String, Object> row : entry.getValue()) {
+                // Agar time_slot_id null bo'lsa, demak bu kunda slot yo'q
+                if (row.get("timeSlotId") != null) {
+                    slots.add(new TimeSlotProjectionImpl(
+                            (Long) row.get("timeSlotId"),
+                            ((java.sql.Time) row.get("startTime")).toLocalTime(),
+                            ((java.sql.Time) row.get("endTime")).toLocalTime(),
+                            SlotStatus.valueOf((String) row.get("slotStatus")),
+                            (Boolean) row.get("isOutsideSchedule")
+                    ));
                 }
-        );
+            }
 
-        // Build final DTO
-        List<WeeklyPlanRespDto.DayDto> days = dayBuilders.values().stream()
-                .map(DayDtoBuilder::build)
-                .collect(Collectors.toList());
+            // Birinchi qatordan kunlik ma'lumotlarni olamiz
+            Map<String, Object> firstRow = entry.getValue().get(0);
+            days.add(new WeeklyPlanRespDto.DayDto(
+                    entry.getKey(),
+                    (Boolean) firstRow.get("dayOff"),
+                    admin ? (String) firstRow.get("dayOffReason") : null,
+                    slots
+            ));
+        }
 
         return new WeeklyPlanRespDto(days);
     }
 
 
-    private static class DayDtoBuilder {
-        private final LocalDate date;
-        @Setter
-        private Boolean dayOff = null;
-        private final List<TimeSlotProjection> timeSlots = new ArrayList<>();
-
-        public DayDtoBuilder(LocalDate date) {
-            this.date = date;
-        }
-
-        public void addTimeSlot(TimeSlotProjection projection) {
-            this.timeSlots.add(projection);
-        }
-       /* public void setDayOff(Boolean dayOff) {
-            this.dayOff = dayOff;
-        }*/
-
-        public WeeklyPlanRespDto.DayDto build() {
-            return new WeeklyPlanRespDto.DayDto(date, dayOff, null, timeSlots);
-        }
-    }
-
-    // TimeSlotProjection implementation
     private static class TimeSlotProjectionImpl implements TimeSlotProjection {
         private final Long timeSlotId;
         private final LocalTime startTime;
@@ -154,4 +131,5 @@ public class WeeklyPlanRepositoryClass {
             return isOutsideSchedule;
         }
     }
+
 }

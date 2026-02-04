@@ -2,7 +2,7 @@ package uz.anvarovich.barber_personal_website_api.dto.req_dto;
 
 import java.time.LocalTime;
 
-public record UpdateSystemSettingReqDto(
+public record SystemSettingDto(
         /*@Positive*/
         Integer visibleDaysForUsers,
         LocalTime defaultWorkStartTime,

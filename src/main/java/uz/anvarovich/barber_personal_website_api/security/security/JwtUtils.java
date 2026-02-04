@@ -1,4 +1,4 @@
-package uz.tuit.unirules.security.security;
+package uz.anvarovich.barber_personal_website_api.security.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

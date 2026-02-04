@@ -1,0 +1,46 @@
+{
+  "days": [
+    {
+      "date": "2026-02-11",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-12",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-13",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-14",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-15",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-16",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    },
+    {
+      "date": "2026-02-17",
+      "dayOff": false,
+      "dayOffReason": null,
+      "timeSlots": []
+    }
+  ]
+}

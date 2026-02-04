@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface WeeklyPlanRepositoryorg extends JpaRepository<WeeklyPlan, Long> {
+public interface WeeklyPlanRepository extends JpaRepository<WeeklyPlan, Long> {
     @Query(value = """
             select *
             from weekly_plan wp
@@ -17,10 +17,5 @@ public interface WeeklyPlanRepositoryorg extends JpaRepository<WeeklyPlan, Long>
             limit 1;
             """, nativeQuery = true)
     Optional<WeeklyPlan> findLastWeek();
-
-    // Joriy haftadan boshlab (shu haftani ham qo'shib) keyingi barcha weekly planlarni olish
-    @Query("SELECT wp FROM WeeklyPlan wp " +
-            "WHERE wp.weekStartDate >= :weekStartDate " +
-            "ORDER BY wp.weekStartDate ASC")
-    List<WeeklyPlan> findAllWithWeekStartAfterOrEqual(@Param("weekStartDate") LocalDate weekStartDate);
+    boolean existsByWeekStartDate(LocalDate nextMonday);
 }

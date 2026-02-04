@@ -1,13 +1,15 @@
-package uz.anvarovich.barber_personal_website_api.services.system_setting_service;
+package uz.anvarovich.barber_personal_website_api.validator;
 
-import uz.anvarovich.barber_personal_website_api.dto.req_dto.UpdateSystemSettingReqDto;
+import uz.anvarovich.barber_personal_website_api.dto.req_dto.SystemSettingDto;
 
 import java.util.Objects;
 
 public class SystemSettingValidator {
+    private SystemSettingValidator() {
+    }
 
-    public static void validate(UpdateSystemSettingReqDto dto) {
-        Objects.requireNonNull(dto, "UpdateSystemSettingReqDto cannot be null");
+    public static void validate(SystemSettingDto dto) {
+        Objects.requireNonNull(dto, "SystemSettingDto cannot be null");
 
         Objects.requireNonNull(dto.visibleDaysForUsers(), "visibleDaysForUsers is required");
         if (dto.visibleDaysForUsers() <= 0) {

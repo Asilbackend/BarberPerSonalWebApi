@@ -1,4 +1,4 @@
-package uz.tuit.unirules.security.security;
+package uz.anvarovich.barber_personal_website_api.security.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,33 +27,28 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/webjars/**", "/**"
+            "/webjars/**"
     };
 
     @Bean
-    //pending
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(m -> m
                 .requestMatchers(SWAGGER_URLS)
                 .permitAll()
                 .requestMatchers("/api/auth/**")
                 .permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/api/user/register")
+                .permitAll()// register uchun
+
                 .requestMatchers(
-                        "/api/notification/student/**",
-                        "/api/module/student/**",
-                        "/api/support_request/student/**"
+                        "/api/admin/**"
                 )
-                .hasAuthority("STUDENT")
-                .requestMatchers("/api/support_request/support/send-response")
-                .hasAnyAuthority("ADMIN")
-                .requestMatchers(HttpMethod.GET,
-                        "/api/recommended-module/**",
-                        "/api/faculty/**",
-                        "/api/discipline-rule/**",
-                        "/api/content/**"
-                )
-                .hasAuthority("STUDENT")
+                .hasAuthority("ADMIN")
+
+                .requestMatchers("/api/user/**")
+                .hasAnyAuthority("USER", "ADMIN")
                 .anyRequest().authenticated()
         );
         http.sessionManagement(sessionManagement ->
@@ -61,10 +56,6 @@ public class SecurityConfig {
         http.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.userDetailsService(customUserDetailsService);
-        // HTTPS ga majburiy qilish
-//        http.requiresChannel(channel -> channel
-//                .anyRequest().requiresSecure()
-//        );
         return http.build();
     }
 
@@ -75,8 +66,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

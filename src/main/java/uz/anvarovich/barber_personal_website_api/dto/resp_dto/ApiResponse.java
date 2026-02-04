@@ -1,4 +1,4 @@
-package uz.tuit.unirules.dto;
+package uz.anvarovich.barber_personal_website_api.dto.resp_dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

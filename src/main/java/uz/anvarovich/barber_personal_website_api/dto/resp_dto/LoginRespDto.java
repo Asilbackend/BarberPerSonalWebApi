@@ -1,4 +1,4 @@
-package uz.tuit.unirules.dto.respond_dto;
+package uz.anvarovich.barber_personal_website_api.dto.resp_dto;
 
 public record LoginRespDto(
         String accessToken,

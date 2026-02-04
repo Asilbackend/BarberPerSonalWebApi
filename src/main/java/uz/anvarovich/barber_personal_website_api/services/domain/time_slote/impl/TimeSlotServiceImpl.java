@@ -1,14 +1,19 @@
-package uz.anvarovich.barber_personal_website_api.services.domain.time_slote;
+package uz.anvarovich.barber_personal_website_api.services.domain.time_slote.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.BookDto;
+import uz.anvarovich.barber_personal_website_api.dto.req_dto.SystemSettingDto;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.UpdateDailyPlanDto;
 import uz.anvarovich.barber_personal_website_api.entity.DailyPlan;
+import uz.anvarovich.barber_personal_website_api.entity.SystemSettings;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.projection.TimeSlotProjection;
 import uz.anvarovich.barber_personal_website_api.repository.TimeSlotRepository;
+import uz.anvarovich.barber_personal_website_api.services.domain.system_setting_service.SystemSettingService;
+import uz.anvarovich.barber_personal_website_api.services.domain.time_slote.TimeSlotService;
 import uz.anvarovich.barber_personal_website_api.validator.BookingValidator;
 
 import java.time.Duration;
@@ -20,13 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class TimeSlotServiceImpl implements TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
-
-    public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository) {
-        this.timeSlotRepository = timeSlotRepository;
-    }
+    private final SystemSettingService systemSettingService;
 
     @Override
     public List<TimeSlotProjection> findByDaily(LocalDate date) {
@@ -82,15 +85,6 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
-    public List<TimeSlot> findAllByIds(List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
-            return Collections.emptyList();
-        }
-        // List<Long> → List<Long> ga o'tkazib, faqat mavjudlarni olamiz
-        return timeSlotRepository.findAllByIds(ids);
-    }
-
-    @Override
     public List<TimeSlot> findAllByIdsAndDate(List<Long> longs, LocalDate date) {
         List<TimeSlot> allByIdsAndDate = timeSlotRepository.findAllByIdsAndDate(longs, date);
         if (allByIdsAndDate.size() != longs.size()) {
@@ -110,6 +104,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
+    @Transactional
     public void createTimeSlotsByOld(Map<DailyPlan, DailyPlan> oldAndNew) {
         List<TimeSlot> unsavedTimeSlot = new ArrayList<>();
         for (DailyPlan oldDailyPlan : oldAndNew.keySet()) {
@@ -170,7 +165,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         List<Long> timeSlotIdss = dto.timeSlotsId();
         LocalDate date = dto.date();
         List<TimeSlot> timeSlots = findAllByIdsAndDate(timeSlotIdss, date);
-        BookingValidator.validate(date, timeSlots, isAdmin);
+        BookingValidator.validate(date, timeSlots, isAdmin, systemSettingService.getCurrent());
         List<TimeSlot> unsaved = new ArrayList<>();
         for (TimeSlot timeSlot : timeSlots) {
             if (isAdmin) {
@@ -193,6 +188,16 @@ public class TimeSlotServiceImpl implements TimeSlotService {
                 timeSlot.setSlotStatus(SlotStatus.OPEN);
                 unsaved.add(timeSlot);
             }
+        }
+        timeSlotRepository.saveAll(unsaved);
+    }
+
+    @Override
+    public void cancelSlotsByUser(List<TimeSlot> timeSlots) {
+        List<TimeSlot> unsaved = new ArrayList<>();
+        for (TimeSlot timeSlot : timeSlots) {
+            timeSlot.setSlotStatus(SlotStatus.OPEN);
+            unsaved.add(timeSlot);
         }
         timeSlotRepository.saveAll(unsaved);
     }

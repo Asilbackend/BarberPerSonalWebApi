@@ -1,26 +1,33 @@
-package uz.anvarovich.barber_personal_website_api.entity;
+package uz.anvarovich.barber_personal_website_api.entity.booking;
 
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
+import uz.anvarovich.barber_personal_website_api.entity.abs.BaseEntity;
 import uz.anvarovich.barber_personal_website_api.entity.user.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Booking {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@Entity
+@Table(
+        name = "booking",  // agar table nomini o'zgartirmoqchi bo'lsangiz
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_booking_user_date",
+                        columnNames = {"user_id", "date"}
+                )
+        }
+)
+public class Booking extends BaseEntity {
     @ManyToOne
-    User user_id;
-    LocalDate date;
-    LocalTime startTime;
-    LocalTime endTime;
-    Integer slotCount;
-    Status status;
-    date
-            start_time
-    end_time
-    slot_count          --1yoki 2
-    status              --ACTIVE |
-    CANCELLED
-            created_at
-
-
+    private User user;
+    private LocalDate date;
+    private Integer slotCount;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status = BookingStatus.ACTIVE;
 }

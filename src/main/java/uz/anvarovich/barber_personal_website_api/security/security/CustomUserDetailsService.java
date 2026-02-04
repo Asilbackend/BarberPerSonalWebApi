@@ -1,11 +1,11 @@
-package uz.tuit.unirules.security.security;
+package uz.anvarovich.barber_personal_website_api.security.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import uz.tuit.unirules.repository.UserRepository;
+import uz.anvarovich.barber_personal_website_api.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
