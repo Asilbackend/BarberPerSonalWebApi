@@ -1,0 +1,93 @@
+package uz.anvarovich.barber_personal_website_api.services.app.auth;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import uz.anvarovich.barber_personal_website_api.dto.req_dto.LoginRequestDTO;
+import uz.anvarovich.barber_personal_website_api.dto.resp_dto.LoginRespDto;
+import uz.anvarovich.barber_personal_website_api.entity.user.User;
+import uz.anvarovich.barber_personal_website_api.repository.UserRepository;
+import uz.anvarovich.barber_personal_website_api.security.security.JwtUtils;
+import uz.anvarovich.barber_personal_website_api.services.domain.auth_service.AuthService;
+
+@Service
+@RequiredArgsConstructor
+public class AuthUserServiceAppImpl implements AuthUserServiceApp {
+    private final AuthService authService;
+    private final JwtUtils jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+
+
+    @Override
+    public String refreshToken(String refreshToken) {
+        return jwtUtil.regenerateAccessToken(refreshToken);
+    }
+
+    public LoginRespDto login(LoginRequestDTO loginRequestDTO) {
+        try {
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequestDTO.login(),
+                            loginRequestDTO.password()
+                    )
+            );
+            UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
+            String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername());
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+            return new LoginRespDto(accessToken, refreshToken);
+        } catch (UsernameNotFoundException ex) {
+            throw new UsernameNotFoundException("Login topilmadi"); // 404 yoki 401
+        } catch (BadCredentialsException ex) {
+            throw new BadCredentialsException("Parol noto'g'ri"); // 401
+        } catch (DisabledException ex) {
+            throw new DisabledException("Hisob faollashtirilmagan"); // 403
+        } catch (LockedException ex) {
+            throw new LockedException("Hisob bloklangan"); // 403
+        }
+    }
+
+
+    public String reLogin(String refreshToken) {
+        return jwtUtil.regenerateAccessToken(refreshToken);
+    }
+
+    private User getAuthenticatedUser() {
+        String username = getUserName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("User not found: " + username));
+    }
+
+    private String getUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("No authentication found in context.");
+        }
+
+        if (!authentication.isAuthenticated()) {
+            throw new AuthenticationCredentialsNotFoundException("User is not authenticated.");
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal == null) {
+            throw new AuthenticationCredentialsNotFoundException("User is not authenticated.");
+        }
+        return principal.toString();
+    }
+
+    public User getAuthUser() {
+        return getAuthenticatedUser();
+    }
+
+    public Long getAuthUserId() {
+        String userName = getUserName();
+        return userRepository.findUserIdByUsername(userName).orElseThrow(() -> new AuthenticationCredentialsNotFoundException("Foydalanuvchi topilmadi"));
+    }
+
+    public String getAuthUsername() {
+        return getUserName();
+    }
+}
