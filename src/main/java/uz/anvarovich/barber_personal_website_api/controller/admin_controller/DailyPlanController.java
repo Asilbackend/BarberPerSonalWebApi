@@ -1,6 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.controller.admin_controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,9 @@ import uz.anvarovich.barber_personal_website_api.services.app.daily_plan.DailyPl
 
 import java.time.LocalDate;
 
+@Tag(
+        name = "Admin -  Daily planni get qilish va update qilish"
+)
 @RestController
 @RequestMapping("/api/admin/dailyPlan")
 @RequiredArgsConstructor
@@ -26,7 +30,7 @@ public class DailyPlanController {
                     Daily planni update qilganda timeSlotlar qayta taqsimalanadi,
                     Agar client band qilgan timeSlotlar yangi taqsimlangan slotlar bilan mos kelmasa,
                     vaqtdan tashqari timeSlot sifatida belgilanadi va client rad etilmaydi.
-                  
+                                      
                     """
     )
     @PutMapping

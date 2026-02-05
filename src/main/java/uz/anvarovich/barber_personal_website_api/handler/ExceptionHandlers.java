@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uz.anvarovich.barber_personal_website_api.dto.resp_dto.ApiResponse;
 import uz.anvarovich.barber_personal_website_api.handler.exceptions.AlreadyExist;
+import uz.anvarovich.barber_personal_website_api.handler.exceptions.CustomException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
@@ -125,6 +126,20 @@ public class ExceptionHandlers {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        printStackTrace(ex);
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.BAD_REQUEST.value(),          // 400
+                ex.getMessage(),
+                false,
+                "INVALID_ARGUMENT"                       // yoki ex.getClass().getSimpleName()
+        );
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleAuthError(AuthenticationCredentialsNotFoundException ex) {
         printStackTrace(ex);
@@ -132,11 +147,10 @@ public class ExceptionHandlers {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(objectApiResponse);
     }
 
-    public record ErrorResponse(
-            String message,
-            Integer status,
-            String errorCode
-    ) {
-
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException ex) {
+        printStackTrace(ex);
+        ApiResponse<Object> objectApiResponse = new ApiResponse<>(ex.getStatus().value(), ex.getMessage(), false, ex.getErrorCode());
+        return ResponseEntity.status(ex.getStatus()).body(objectApiResponse);
     }
 }

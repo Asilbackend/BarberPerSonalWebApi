@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.domain.dailyPlan_service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +96,7 @@ public class DailyPlanServiceImpl implements DailyPlanService {
 
     @Override
     public DailyPlan findByDate(LocalDate date) {
-        return dailyPlanRepository.findByDate(date).orElseThrow();
+        return dailyPlanRepository.findByDate(date).orElseThrow(() -> new EntityNotFoundException("date boyicha DailyPlan topilmadi"));
     }
 
 

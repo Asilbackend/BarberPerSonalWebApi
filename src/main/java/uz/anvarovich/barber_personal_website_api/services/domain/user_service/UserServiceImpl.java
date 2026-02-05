@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.CreateUserReqDto;
 import uz.anvarovich.barber_personal_website_api.entity.user.User;
 import uz.anvarovich.barber_personal_website_api.entity.user.enums.Role;
+import uz.anvarovich.barber_personal_website_api.handler.exceptions.AlreadyExist;
 import uz.anvarovich.barber_personal_website_api.repository.UserRepository;
 import uz.anvarovich.barber_personal_website_api.services.domain.auth_service.AuthService;
 import uz.anvarovich.barber_personal_website_api.validator.UserValidator;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
     private void create(CreateUserReqDto createUserReqDto, Role role) {
         UserValidator.validate(createUserReqDto);
         if (userRepository.findByUsername(createUserReqDto.username()).isPresent()) {
-            throw new RuntimeException("this username already exist, please choose another one!");
+            throw new AlreadyExist("this username already exist, please choose another one!");
         }
         String encodePassword = passwordEncoder.encode(createUserReqDto.password());
         User user = new User(createUserReqDto.fullName(), createUserReqDto.phone(), createUserReqDto.username(), role, encodePassword);

@@ -23,27 +23,6 @@ import java.time.LocalDate;
 public class AdminBlockController {
     private final AdminBlockCServiceApp adminBlockCServiceApp;
 
-    /* @ApiResponses(value = {
-             @ApiResponse(
-                     responseCode = "204",
-                     description = "Kun muvaffaqiyatli bloklandi"
-             ),
-             @ApiResponse(
-                     responseCode = "400",
-                     description = "Noto'g'ri sana formati yoki sanada xato (masalan, o'tmishdagi sana)",
-                     content = @Content(mediaType = "application/json")
-             ),
-             @ApiResponse(
-                     responseCode = "401",
-                     description = "Autentifikatsiya muvaffaqiyatsiz (token yo'q yoki yaroqsiz)",
-                     content = @Content
-             ),
-             @ApiResponse(
-                     responseCode = "403",
-                     description = "Foydalanuvchida ADMIN huquqi yo'q",
-                     content = @Content
-             )
-     })*/
     @Operation(
             summary = "Kun uchun qoshimcha bandlik kiritish",
             description = """
@@ -59,10 +38,7 @@ public class AdminBlockController {
     }
 
     @Operation(
-            summary = "qoshimcha bandlikni bekor qilish ",
-            description = """
-                    
-                    """
+            summary = "qoshimcha bandlikni bekor qilish "
     )
     @DeleteMapping
     public HttpEntity<?> cancelBlock(@RequestParam LocalDate date) {

@@ -1,13 +1,12 @@
-package uz.anvarovich.barber_personal_website_api.entity.enums;
+package uz.anvarovich.barber_personal_website_api.entity.booking;
 
 import jakarta.persistence.*;
 import lombok.*;
 import uz.anvarovich.barber_personal_website_api.entity.abs.BaseEntity;
-import uz.anvarovich.barber_personal_website_api.entity.booking.BookingStatus;
+import uz.anvarovich.barber_personal_website_api.entity.enums.BookingStatus;
 import uz.anvarovich.barber_personal_website_api.entity.user.User;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @AllArgsConstructor
 @NoArgsConstructor

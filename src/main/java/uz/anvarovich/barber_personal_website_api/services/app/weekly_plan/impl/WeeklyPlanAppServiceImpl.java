@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.app.weekly_plan.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class WeeklyPlanAppServiceImpl implements WeeklyPlanAppService {
     @Override
     @Transactional
     public void createWeeklyPlanByLastWeek() {
-        WeeklyPlan oldWeeklyPlan = weeklyPlanService.findLastWeek().orElseThrow(() -> new RuntimeException("old weekly plan topilmadi"));
+        WeeklyPlan oldWeeklyPlan = weeklyPlanService.findLastWeek().orElseThrow(() -> new EntityNotFoundException("old weekly plan topilmadi"));
         LocalDate oldWeeklyPlanWeekStartDate = oldWeeklyPlan.getWeekStartDate();
         LocalDate newWeekStartDate = oldWeeklyPlanWeekStartDate.plusWeeks(1);
         WeeklyPlan newWeeklyPlan = weeklyPlanService.createWeeklyPlan(newWeekStartDate);

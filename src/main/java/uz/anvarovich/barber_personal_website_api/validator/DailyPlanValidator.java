@@ -1,7 +1,9 @@
 package uz.anvarovich.barber_personal_website_api.validator;
 
+import org.springframework.http.HttpStatus;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.SystemSettingDto;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.UpdateDailyPlanDto;
+import uz.anvarovich.barber_personal_website_api.handler.exceptions.CustomException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,27 +16,34 @@ public class DailyPlanValidator {
 
     public static void validate(UpdateDailyPlanDto dto, LocalDate date) {
         if (!date.isAfter(LocalDate.now())) {
-            throw new RuntimeException("ADMIN , siz ertangi kundan boshlab boshqa kunlarni update qila olasiz, bugunni emas");
+            throw new CustomException(
+                    "ADMIN, siz ertangi kundan boshlab boshqa kunlarni update qila olasiz, bugunni emas",
+                    HttpStatus.BAD_REQUEST,
+                    "CANNOT_UPDATE_TODAY"
+            );
         }
 
-        Objects.requireNonNull(dto, "SystemSettingDto cannot be null");
+        Objects.requireNonNull(dto, "UpdateDailyPlanDto cannot be null");
 
-        Objects.requireNonNull(dto.workStartTime(), "defaultWorkStartTime is required");
-        Objects.requireNonNull(dto.workEndTime(), "defaultWorkEndTime is required");
+        Objects.requireNonNull(dto.workStartTime(), "workStartTime is required");
+        Objects.requireNonNull(dto.workEndTime(), "workEndTime is required");
 
         if (dto.workEndTime().isBefore(dto.workStartTime())) {
-            throw new IllegalArgumentException("End time must be after start time");
+            throw new CustomException(
+                    "Ish tugash vaqti boshlanish vaqtidan keyin bo‘lishi kerak",
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_TIME_RANGE"
+            );
         }
 
-        Objects.requireNonNull(dto.slotDurationMin(), "defaultSlotDurationMin is required");
+        Objects.requireNonNull(dto.slotDurationMin(), "slotDurationMin is required");
+
         if (dto.slotDurationMin() < 5) {
-            throw new IllegalArgumentException("Slot duration must be ≥ 5 minutes");
-        }
-    }
-
-    public static void validateDateIsVisible(LocalDate date, SystemSettingDto current) {
-        if (LocalDate.now().plusDays(current.visibleDaysForUsers()).isBefore(date)) {
-            throw new RuntimeException("siz bu kun haqida maulmot ololmaysiz, (unvisible days)");
+            throw new CustomException(
+                    "Slot davomiyligi kamida 5 daqiqa bo‘lishi kerak",
+                    HttpStatus.BAD_REQUEST,
+                    "SLOT_DURATION_TOO_SHORT"
+            );
         }
     }
 }

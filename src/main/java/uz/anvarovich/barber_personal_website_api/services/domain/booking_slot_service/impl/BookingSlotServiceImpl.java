@@ -2,8 +2,9 @@ package uz.anvarovich.barber_personal_website_api.services.domain.booking_slot_s
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.entity.BookingSlot;
-import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.repository.BookingSlotRepository;
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_slot_service.BookingSlotService;
@@ -34,5 +35,11 @@ public class BookingSlotServiceImpl implements BookingSlotService {
     @Override
     public List<TimeSlot> findTimeSlotsByBookingId(Long bookingId) {
         return bookingSlotRepository.findTimeSlotsByBookingId(bookingId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByBookingId(Long bookingId) {
+        bookingSlotRepository.deleteAllByBookingId(bookingId);
     }
 }

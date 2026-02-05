@@ -1,6 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.services.app.notification.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class NotificationAppServiceImpl implements NotificationAppService {
         Long currentUserId = userService.getCurrentUserId();
         Notification notification = notificationService.findById(notificationId);
         if (!notification.getToUser().getId().equals(currentUserId)) {
-            throw new RuntimeException("Bu xabar sizga tegishli emas");
+            throw new IllegalArgumentException("Bu xabar sizga tegishli emas");
         }
         notificationService.setReadAt(LocalDateTime.now(), notification);
     }

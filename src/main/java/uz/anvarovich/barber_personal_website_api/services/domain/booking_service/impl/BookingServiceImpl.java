@@ -3,9 +3,10 @@ package uz.anvarovich.barber_personal_website_api.services.domain.booking_servic
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
-import uz.anvarovich.barber_personal_website_api.entity.booking.BookingStatus;
+import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.enums.BookingStatus;
 import uz.anvarovich.barber_personal_website_api.entity.user.User;
+import uz.anvarovich.barber_personal_website_api.handler.exceptions.AlreadyExist;
 import uz.anvarovich.barber_personal_website_api.repository.BookingRepository;
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_service.BookingService;
 import uz.anvarovich.barber_personal_website_api.services.domain.user_service.UserService;
@@ -30,10 +31,10 @@ public class BookingServiceImpl implements BookingService {
         } else {
             Booking bookingCurrent = booking.get();
             if (bookingCurrent.getStatus().equals(BookingStatus.ACTIVE)) {
-                throw new RuntimeException("Bu kun uchun allaqachon BOOK qilgansiz");
+                throw new AlreadyExist("Bu kun uchun allaqachon BOOK qilgansiz");
             } else if (bookingCurrent.getStatus().equals(BookingStatus.CANCELLED)) {
                 bookingCurrent.setStatus(BookingStatus.ACTIVE);
-                bookingRepository.save(bookingCurrent);
+                return bookingRepository.save(bookingCurrent);
             }
         }
         throw new RuntimeException("noma'lum xatolik ketti create Booking");
@@ -45,6 +46,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public void cancelById(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking topilmadi"));
         checkBookIsOwn(booking);
@@ -54,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
 
     private void checkBookIsOwn(Booking booking) {
         if (!booking.getUser().getId().equals(userService.getCurrentUserId())) {
-            throw new RuntimeException("book not match to this user");
+            throw new IllegalArgumentException("book not match to this user");
         }
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import uz.anvarovich.barber_personal_website_api.entity.enums.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.projection.TimeSlotProjection;
 
@@ -45,4 +46,6 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
     void deleteAllOpenByDailyPlanId(@Param("dailyPlanId") Long dailyPlanId);
 
     List<TimeSlot> findByDailyPlanId(Long dailyPlanId);
+    /*@Query("select ts from TimeSlot ts where ts.dailyPlan.id=:dailyPlanId and ts.slotStatus=:slotStatus")
+    List<TimeSlot> findByDailyPlanIdAndNotSlotStatus(Long dailyPlanId, SlotStatus slotStatus);*/
 }

@@ -1,6 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.controller.user_controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,9 @@ import uz.anvarovich.barber_personal_website_api.dto.resp_dto.WeeklyPlanRespDto;
 import uz.anvarovich.barber_personal_website_api.services.app.daily_plan.DailyPlanAppService;
 
 import java.time.LocalDate;
-
+@Tag(
+        name = "User - Weekly va Daily planlarni get qilish"
+)
 @RestController
 @RequestMapping("/api/user/plan")
 @RequiredArgsConstructor

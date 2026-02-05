@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.domain.time_slote.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         Integer slotDurationMinutes = currentSetting.slotDurationMin();
         if (workStartTime == null || workEndTime == null || slotDurationMinutes == null || slotDurationMinutes <= 0) {
             // log yozish yoki exception tashlash mumkin
-            throw new RuntimeException("validation error : workStartTime == null || workEndTime == null || slotDurationMinutes == null || slotDurationMinutes <= 0");
+            throw new IllegalArgumentException("validation error : workStartTime == null || workEndTime == null || slotDurationMinutes == null || slotDurationMinutes <= 0");
         }
 
         List<TimeSlot> slots = new ArrayList<>();
@@ -75,7 +76,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
         // Agar hech qanday slot yaratilmasa (masalan duration juda katta bo'lsa)
         if (slots.isEmpty()) {
-            throw new RuntimeException("Slotlar yaratilmadi");
+            throw new EntityNotFoundException("Slotlar yaratilmadi");
             // log yozish mumkin: "No slots created for dailyPlan " + dailyPlan.getId()
         }
         return timeSlotRepository.saveAll(slots);
@@ -85,7 +86,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     public List<TimeSlot> findAllByIdsAndDate(List<Long> longs, LocalDate date) {
         List<TimeSlot> allByIdsAndDate = timeSlotRepository.findAllByIdsAndDate(longs, date);
         if (allByIdsAndDate.size() != longs.size()) {
-            throw new RuntimeException("xato kunlar kirtildi,  (dam olish kuni yoki timeslot mavjud bolmagan kun)");
+            throw new IllegalArgumentException("xato kunlar kirtildi,  (dam olish kuni yoki timeslot mavjud bolmagan kun)");
         }
         return timeSlotRepository.findAllByIdsAndDate(longs, date);
     }
@@ -190,6 +191,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
+    @Transactional
     public void cancelSlotsByUser(List<TimeSlot> timeSlots) {
         List<TimeSlot> unsaved = new ArrayList<>();
         for (TimeSlot timeSlot : timeSlots) {
@@ -197,5 +199,17 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             unsaved.add(timeSlot);
         }
         timeSlotRepository.saveAll(unsaved);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllOutsideTrue(List<TimeSlot> timeSlotsByBookingId) {
+        List<TimeSlot> undDeletedSlots = new ArrayList<>();
+        for (TimeSlot timeSlot : timeSlotsByBookingId) {
+            if (timeSlot.getIsOutsideSchedule()) {
+                undDeletedSlots.add(timeSlot);
+            }
+        }
+        timeSlotRepository.deleteAll(undDeletedSlots);
     }
 }

@@ -59,7 +59,8 @@ public class Runner implements CommandLineRunner {
     private void createIfNotAdminUsers() {
         if (userRepository.findAll().isEmpty()) {
             userService.createAdmin(new CreateUserReqDto("Asilbek O'ktamov", "998919207150", "admin200", "award200", "award200"));
-            userService.createUser(new CreateUserReqDto("Asilbekjon User", "998339207150", "user200", "award200", "award200"));
+            userService.createUser(new CreateUserReqDto("1Asilbekjon User1", "998339207150", "user200", "award200", "award200"));
+            userService.createUser(new CreateUserReqDto("2Userjon User2", "998339207100", "user201", "award200", "award200"));
         }
     }
 }

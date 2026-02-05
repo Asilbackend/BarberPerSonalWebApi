@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uz.anvarovich.barber_personal_website_api.handler.ExceptionHandlers;
+import uz.anvarovich.barber_personal_website_api.handler.exceptions.CustomException;
 
 import java.io.IOException;
 
@@ -69,12 +71,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        ExceptionHandlers.ErrorResponse errorResponse = new ExceptionHandlers.ErrorResponse(
-                message,
-                401, null
-        );
+
+        CustomException customException = new CustomException(message, HttpStatus.UNAUTHORIZED);
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(errorResponse);
+        String json = mapper.writeValueAsString(customException);
         response.getWriter().write(json);
         response.getWriter().flush();
     }

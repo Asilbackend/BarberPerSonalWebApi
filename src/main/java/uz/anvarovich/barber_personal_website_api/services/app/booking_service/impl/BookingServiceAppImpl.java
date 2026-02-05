@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.BookDto;
 import uz.anvarovich.barber_personal_website_api.dto.resp_dto.BookRespDto;
-import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.services.app.booking_service.BookingServiceApp;
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_service.BookingService;
@@ -39,7 +39,7 @@ public class BookingServiceAppImpl implements BookingServiceApp {
         for (Booking booking : bookings) {
             List<TimeSlot> timeSlots = bookingSlotService.findTimeSlotsByBookingId(booking.getId());
             List<BookRespDto.TimeSlotDto> timeSlotDtos = getTimeSlotDtos(timeSlots);
-            bookRespList.add(new BookRespDto(booking.getId(), booking.getDate(), timeSlotDtos));
+            bookRespList.add(new BookRespDto(booking.getId(), booking.getDate(), timeSlotDtos, booking.getStatus()));
         }
         return bookRespList;
     }
@@ -48,7 +48,11 @@ public class BookingServiceAppImpl implements BookingServiceApp {
     @Transactional
     public void cancelByUser(Long bookingId) {
         bookingService.cancelById(bookingId);
-        timeSlotService.cancelSlotsByUser(bookingSlotService.findTimeSlotsByBookingId(bookingId));
+        List<TimeSlot> timeSlotsByBookingId = bookingSlotService.findTimeSlotsByBookingId(bookingId);
+        timeSlotService.cancelSlotsByUser(timeSlotsByBookingId);
+        bookingSlotService.deleteByBookingId(bookingId);
+        //outside bop qolgan open slotlarni o'chiramiz
+        timeSlotService.deleteAllOutsideTrue(timeSlotsByBookingId);
     }
 
     private static List<BookRespDto.TimeSlotDto> getTimeSlotDtos(List<TimeSlot> timeSlots) {

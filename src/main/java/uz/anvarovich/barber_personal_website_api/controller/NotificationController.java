@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,9 @@ import uz.anvarovich.barber_personal_website_api.dto.resp_dto.NotificationRespDt
 import uz.anvarovich.barber_personal_website_api.entity.Notification;
 import uz.anvarovich.barber_personal_website_api.services.app.notification.NotificationAppService;
 
+@Tag(
+        name = "Notification -  get qilish"
+)
 @RestController
 @RequestMapping("/api/notification")
 @RequiredArgsConstructor

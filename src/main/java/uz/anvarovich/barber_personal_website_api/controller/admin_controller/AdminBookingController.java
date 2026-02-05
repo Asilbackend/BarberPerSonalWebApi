@@ -1,6 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.controller.admin_controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,10 @@ import uz.anvarovich.barber_personal_website_api.dto.req_dto.BookDto;
 import uz.anvarovich.barber_personal_website_api.services.app.booking_service.BookingServiceApp;
 
 //qo'lda band qilish
+@Tag(
+        name = "Admin - Qo'lda band qilish",
+        description = "Ma'lum kunga oid time slotlarni tanlab qolda band qiladi"
+)
 @RestController
 @RequestMapping("/api/admin/book")
 @RequiredArgsConstructor

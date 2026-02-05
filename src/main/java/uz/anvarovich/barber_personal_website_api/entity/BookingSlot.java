@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import uz.anvarovich.barber_personal_website_api.entity.abs.BaseEntity;
-import uz.anvarovich.barber_personal_website_api.entity.enums.Booking;
+import uz.anvarovich.barber_personal_website_api.entity.booking.Booking;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 
 @AllArgsConstructor

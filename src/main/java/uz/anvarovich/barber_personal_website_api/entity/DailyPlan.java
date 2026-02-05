@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -15,12 +16,16 @@ import java.time.LocalTime;
 @Setter
 @Entity
 public class DailyPlan extends BaseEntity implements Cloneable {
+    @Column(unique = true, nullable = false)
     private LocalDate date;
+    @Column(nullable = false)
     private LocalTime workStartTime;
+    @Column(nullable = false)
     private LocalTime workEndTime;
+    @Column(nullable = false)
     private Integer slotDurationMin; //30 min
     private Boolean isDayOff;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private WeeklyPlan weeklyPlan;
 
     @Override

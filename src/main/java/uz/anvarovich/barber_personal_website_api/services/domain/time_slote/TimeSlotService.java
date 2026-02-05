@@ -3,6 +3,7 @@ package uz.anvarovich.barber_personal_website_api.services.domain.time_slote;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.BookDto;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.UpdateDailyPlanDto;
 import uz.anvarovich.barber_personal_website_api.entity.DailyPlan;
+import uz.anvarovich.barber_personal_website_api.entity.enums.SlotStatus;
 import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.projection.TimeSlotProjection;
 
@@ -19,7 +20,6 @@ public interface TimeSlotService {
 
 
     List<TimeSlot> findAllByIdsAndDate(List<Long> longs, LocalDate date);
-
 
 
     List<TimeSlot> findAllByDailyPlanId(Long id);
@@ -40,5 +40,6 @@ public interface TimeSlotService {
 
     void cancelSlotsByUser(List<TimeSlot> timeSlotsByBookingId);
 
+    void deleteAllOutsideTrue(List<TimeSlot> timeSlotsByBookingId);
 
 }

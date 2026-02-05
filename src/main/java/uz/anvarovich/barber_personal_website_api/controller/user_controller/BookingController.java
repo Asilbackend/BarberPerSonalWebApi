@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.controller.user_controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,9 @@ import uz.anvarovich.barber_personal_website_api.services.app.booking_service.Bo
 
 import java.util.List;
 
+@Tag(
+        name = "User - Book qilish, cancel qilish, booklarni get qilish "
+)
 @RestController
 @RequestMapping("/api/user/book")
 @RequiredArgsConstructor

@@ -1,6 +1,7 @@
 package uz.anvarovich.barber_personal_website_api.controller.admin_controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,10 @@ import uz.anvarovich.barber_personal_website_api.services.app.weekly_plan.Weekly
 
 import java.time.LocalDate;
 
+@Tag(
+        name = "Admin- Weekly plan yaratish va get qilish",
+        description = "Yangi yaratish yoki o'tgan hafta boyicha"
+)
 @RestController
 @RequestMapping("/api/admin/weekly-plan")
 @RequiredArgsConstructor

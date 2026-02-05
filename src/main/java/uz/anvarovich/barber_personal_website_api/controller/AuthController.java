@@ -1,6 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -11,7 +11,9 @@ import uz.anvarovich.barber_personal_website_api.dto.resp_dto.LoginRespDto;
 import uz.anvarovich.barber_personal_website_api.services.app.auth.AuthUserServiceApp;
 
 import java.util.Map;
-
+@Tag(
+        name = "Login , tokenni refresh qilish"
+)
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -29,10 +31,5 @@ public class AuthController {
     public Map<String, String> getNewAccessToken(@RequestParam String refreshToken) {
         String accessToken = authUserService.refreshToken(refreshToken);
         return Map.of("accessToken", accessToken);
-    }
-
-    @GetMapping("/logout")
-    public String logout() {
-        return "logout qiling";
     }
 }
