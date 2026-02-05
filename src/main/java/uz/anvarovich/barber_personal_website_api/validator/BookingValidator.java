@@ -7,6 +7,8 @@ import uz.anvarovich.barber_personal_website_api.entity.time_slot.TimeSlot;
 import uz.anvarovich.barber_personal_website_api.handler.exceptions.CustomException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public final class BookingValidator {
@@ -14,7 +16,14 @@ public final class BookingValidator {
 
     }
 
-    public static void validate(LocalDate date, List<TimeSlot> timeSlots, boolean forAdmin, SystemSettingDto systemSettingDto) {
+    public static void validate(
+            LocalDate date,
+            List<TimeSlot> timeSlots,
+            boolean forAdmin,
+            SystemSettingDto systemSettingDto
+    ) {
+
+        // Sana: bugun yoki kelajak bo‘lishi shart
         if (date.isBefore(LocalDate.now())) {
             throw new CustomException(
                     "Bugundan oldingi kunlarni band qilolmaysiz",
@@ -23,12 +32,15 @@ public final class BookingValidator {
             );
         }
 
+        // User uchun qo‘shimcha cheklovlar
         if (!forAdmin) {
+
             Integer visibleDaysForUsers = systemSettingDto.visibleDaysForUsers();
 
-            if (LocalDate.now().plusDays(visibleDaysForUsers).isBefore(date)) {
+            if (date.isAfter(LocalDate.now().plusDays(visibleDaysForUsers))) {
                 throw new CustomException(
-                        "Siz faqat %d kunlik planni ko‘rib booking qila olasiz".formatted(visibleDaysForUsers),
+                        "Siz faqat %d kunlik planni ko‘rib booking qila olasiz"
+                                .formatted(visibleDaysForUsers),
                         HttpStatus.BAD_REQUEST,
                         "DATE_BEYOND_VISIBLE_RANGE"
                 );
@@ -43,10 +55,12 @@ public final class BookingValidator {
             }
 
             if (timeSlots.size() == 2) {
-                TimeSlot timeSlot1 = timeSlots.get(0);
-                TimeSlot timeSlot2 = timeSlots.get(1);
+                timeSlots.sort(Comparator.comparing(TimeSlot::getStartTime));
 
-                if (!timeSlot1.getEndTime().equals(timeSlot2.getStartTime())) {
+                TimeSlot first = timeSlots.get(0);
+                TimeSlot second = timeSlots.get(1);
+
+                if (!first.getEndTime().equals(second.getStartTime())) {
                     throw new CustomException(
                             "Tanlangan slotlar ketma-ket emas",
                             HttpStatus.BAD_REQUEST,
@@ -56,21 +70,40 @@ public final class BookingValidator {
             }
         }
 
+        //Har bir slot uchun tekshiruv
         for (TimeSlot timeSlot : timeSlots) {
+
+            // Slot sanasi mos kelishi shart
             if (!timeSlot.getDailyPlan().getDate().equals(date)) {
                 throw new CustomException(
-                        "Time slotlar kiritilgan kun/sana bilan mos kelmayapti",
+                        "Time slotlar kiritilgan sana bilan mos kelmayapti",
                         HttpStatus.BAD_REQUEST,
                         "SLOT_DATE_MISMATCH"
                 );
             }
 
-            if (!timeSlot.getSlotStatus().equals(SlotStatus.OPEN)) {
+            // Slot OPEN bo‘lishi shart
+            if (timeSlot.getSlotStatus() != SlotStatus.OPEN) {
                 throw new CustomException(
                         "Barcha tanlangan slotlar OPEN holatda bo‘lishi kerak",
                         HttpStatus.BAD_REQUEST,
                         "SLOT_NOT_OPEN"
                 );
+            }
+
+            // Faqat user uchun: o‘tmish vaqtni band qilmaslik
+            if (!forAdmin && date.equals(LocalDate.now())) {
+
+                LocalDateTime slotDateTime =
+                        LocalDateTime.of(date, timeSlot.getStartTime());
+
+                if (slotDateTime.isBefore(LocalDateTime.now())) {
+                    throw new CustomException(
+                            "O‘tmishdagi vaqtni band qilolmaysiz",
+                            HttpStatus.BAD_REQUEST,
+                            "TIME_IN_PAST"
+                    );
+                }
             }
         }
     }

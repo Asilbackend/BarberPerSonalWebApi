@@ -23,8 +23,9 @@ public class WeeklyPlanServiceImpl implements WeeklyPlanService {
     }
 
     @Transactional
-    public WeeklyPlan createWeeklyPlan(LocalDate newWeekStartDate) {
-        WeeklyPlan weeklyPlan = new WeeklyPlan(newWeekStartDate, newWeekStartDate.plusDays(5), false);
+    @Override
+    public WeeklyPlan createWeeklyPlan(LocalDate newWeekStartDate, boolean copyFromPrev) {
+        WeeklyPlan weeklyPlan = new WeeklyPlan(newWeekStartDate, newWeekStartDate.plusDays(5), copyFromPrev);
         return weeklyPlanRepository.save(weeklyPlan);
     }
 

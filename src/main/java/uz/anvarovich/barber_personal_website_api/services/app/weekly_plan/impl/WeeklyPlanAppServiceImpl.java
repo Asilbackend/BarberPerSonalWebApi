@@ -44,7 +44,7 @@ public class WeeklyPlanAppServiceImpl implements WeeklyPlanAppService {
 
         SystemSettingDto currentSetting = systemSettingService.getCurrent();
         LocalDate newWeekStartDate = oldWeekStartDate.plusWeeks(1);
-        WeeklyPlan weeklyPlan = weeklyPlanService.createWeeklyPlan(newWeekStartDate);
+        WeeklyPlan weeklyPlan = weeklyPlanService.createWeeklyPlan(newWeekStartDate, false);
         for (int i = 0; i <= 5; i++) {
             LocalDate toDay = newWeekStartDate.plusDays(i);
             DailyPlan dailyPlan = dailyPlanService.cerateDailyPlan(toDay, currentSetting, weeklyPlan);
@@ -63,7 +63,7 @@ public class WeeklyPlanAppServiceImpl implements WeeklyPlanAppService {
         WeeklyPlan oldWeeklyPlan = weeklyPlanService.findLastWeek().orElseThrow(() -> new EntityNotFoundException("old weekly plan topilmadi"));
         LocalDate oldWeeklyPlanWeekStartDate = oldWeeklyPlan.getWeekStartDate();
         LocalDate newWeekStartDate = oldWeeklyPlanWeekStartDate.plusWeeks(1);
-        WeeklyPlan newWeeklyPlan = weeklyPlanService.createWeeklyPlan(newWeekStartDate);
+        WeeklyPlan newWeeklyPlan = weeklyPlanService.createWeeklyPlan(newWeekStartDate, true);
         List<DailyPlan> oldDailyPlans = dailyPlanService.findAllByWeeklyPlanId(oldWeeklyPlan.getId());
         Map<DailyPlan, DailyPlan> oldAndNew = dailyPlanService.createDailyPlansByOld(oldDailyPlans, newWeeklyPlan);
         timeSlotService.createTimeSlotsByOld(oldAndNew);

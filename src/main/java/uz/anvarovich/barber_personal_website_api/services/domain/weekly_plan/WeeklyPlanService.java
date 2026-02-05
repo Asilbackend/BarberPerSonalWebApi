@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface WeeklyPlanService {
     Optional<WeeklyPlan> findLastWeek();
 
-    WeeklyPlan createWeeklyPlan(LocalDate newWeekStartDate);
+    WeeklyPlan createWeeklyPlan(LocalDate newWeekStartDate, boolean copyFromPrev);
 
     boolean existsByWeekStartDate(LocalDate nextMonday);
 
