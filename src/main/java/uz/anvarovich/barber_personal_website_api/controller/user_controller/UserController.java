@@ -21,7 +21,7 @@ public class UserController {
     private final UserAppService userAppService;
 
     @GetMapping
-    public HttpEntity<?> getCurrentUser() {
+    public HttpEntity<UserRespDto> getCurrentUser() {
         UserRespDto dto = UserMapper.toDto(userAppService.getCurrentUser());
         return ResponseEntity.ok(dto);
     }

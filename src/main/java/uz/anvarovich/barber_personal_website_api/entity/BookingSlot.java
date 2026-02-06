@@ -18,5 +18,5 @@ public class BookingSlot extends BaseEntity {
     private Booking booking;
     @ManyToOne(optional = false)
     private TimeSlot timeSlot;
-    private int slotOrder; // 1 yoki 2 aa
+    private int slotOrder; // 1 yoki 2
 }

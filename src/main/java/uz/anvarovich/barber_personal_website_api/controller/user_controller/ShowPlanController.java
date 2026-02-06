@@ -23,13 +23,13 @@ public class ShowPlanController {
     private final DailyPlanAppService dailyPlanAppService;
 
     @GetMapping("/daily")
-    public HttpEntity<?> getPlanDaily(@RequestParam LocalDate date) {
+    public HttpEntity<WeeklyPlanRespDto.DayDto> getPlanDaily(@RequestParam LocalDate date) {
         WeeklyPlanRespDto.DayDto dto = dailyPlanAppService.getDailyByDate(date, false);
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/weekly")
-    public HttpEntity<?> getPlanWeekly(@RequestParam LocalDate weekStartDate) {
+    public HttpEntity<WeeklyPlanRespDto> getPlanWeekly(@RequestParam LocalDate weekStartDate) {
         WeeklyPlanRespDto weeklyPlanRespDto = dailyPlanAppService.getWeeklyPlanFromWeekStartDateForUser(weekStartDate);
         return ResponseEntity.ok(weeklyPlanRespDto);
     }

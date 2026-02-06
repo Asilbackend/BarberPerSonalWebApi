@@ -9,11 +9,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NotificationService {
-    void notifyAdmin(String message, List<User> admins);
+    void notifyUsers(String message, List<User> admins);
 
     Page<Notification> findAllByUserId(Long currentUserId, Pageable pageable);
 
     Notification findById(Long notificationId);
 
     void setReadAt(LocalDateTime now, Notification notification);
+
+    void notifyUsersAsync(String formatted, List<User> notifyUsers);
+
 }

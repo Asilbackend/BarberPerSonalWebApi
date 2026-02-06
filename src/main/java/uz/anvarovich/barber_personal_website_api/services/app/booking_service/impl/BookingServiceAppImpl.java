@@ -11,6 +11,7 @@ import uz.anvarovich.barber_personal_website_api.services.app.booking_service.Bo
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_service.BookingService;
 import uz.anvarovich.barber_personal_website_api.services.domain.booking_slot_service.BookingSlotService;
 import uz.anvarovich.barber_personal_website_api.services.domain.time_slote.TimeSlotService;
+import uz.anvarovich.barber_personal_website_api.services.domain.user_service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class BookingServiceAppImpl implements BookingServiceApp {
     private final TimeSlotService timeSlotService;
     private final BookingService bookingService;
     private final BookingSlotService bookingSlotService;
+    private final UserService userService;
 
     private List<TimeSlot> bookSlots(BookDto dto, boolean isAdmin) {
         return timeSlotService.book(dto, isAdmin);
@@ -44,15 +46,31 @@ public class BookingServiceAppImpl implements BookingServiceApp {
         return bookRespList;
     }
 
+    private void checkBookIsOwn(Booking booking) {
+        if (!booking.getUser().getId().equals(userService.getCurrentUserId())) {
+            throw new IllegalArgumentException("book not match to this user");
+        }
+    }
+
     @Override
     @Transactional
     public void cancelByUser(Long bookingId) {
-        bookingService.cancelById(bookingId);
+        Booking booking = bookingService.findById(bookingId);
+        checkBookIsOwn(booking);
+        bookingService.cancel(booking);
         List<TimeSlot> timeSlotsByBookingId = bookingSlotService.findTimeSlotsByBookingId(bookingId);
         timeSlotService.cancelSlotsByUser(timeSlotsByBookingId);
         bookingSlotService.deleteByBookingId(bookingId);
         //outside bop qolgan open slotlarni o'chiramiz
         timeSlotService.deleteAllOutsideTrue(timeSlotsByBookingId);
+    }
+
+    @Override
+    @Transactional
+    public void cancelByAdmin(BookDto bookDto) {
+        timeSlotService.cancelBookByAdmin(bookDto);
+        List<TimeSlot> timeSlotList = timeSlotService.findAllByIdsAndDate(bookDto.timeSlotsId(), bookDto.date());
+        timeSlotService.deleteAllOutsideTrue(timeSlotList);
     }
 
     private static List<BookRespDto.TimeSlotDto> getTimeSlotDtos(List<TimeSlot> timeSlots) {
@@ -72,10 +90,5 @@ public class BookingServiceAppImpl implements BookingServiceApp {
         bookingSlotService.book(booking, timeSlots);
     }
 
-    @Override
-    @Transactional
-    public void cancelByAdmin(BookDto bookDto) {
-        timeSlotService.cancelBookByAdmin(bookDto);
-    }
 
 }

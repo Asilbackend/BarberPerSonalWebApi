@@ -12,4 +12,5 @@ public interface BookingSlotService {
     List<TimeSlot> findTimeSlotsByBookingId(Long id);
 
     void deleteByBookingId(Long bookingId);
+
 }

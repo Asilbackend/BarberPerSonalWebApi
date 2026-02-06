@@ -31,28 +31,25 @@ public class DailyPlan extends BaseEntity implements Cloneable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof DailyPlan that)) return false;
 
-        DailyPlan dailyPlan = (DailyPlan) o;
+        if (this.getId() == null || that.getId() == null) return false;
 
-        // ID null bo'lishi mumkin (yangi ob'ektlar uchun)
-        return getId() != null && getId().equals(dailyPlan.getId());
+        return this.getId().equals(that.getId());
     }
 
     @Override
     public int hashCode() {
-        // ID null bo'lsa → standart constant (42 yoki boshqa son)
-        return getId() != null ? getId().hashCode() : 42;
+        return getId() != null ? getId().hashCode() : 0;
     }
+
 
     // ------------------------------------------------------------------------
 
     @Override
     public DailyPlan clone() {
         try {
-            DailyPlan clone = (DailyPlan) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
+            return (DailyPlan) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

@@ -59,7 +59,7 @@ public class WeeklyPlanController {
     }
 
     @GetMapping
-    public HttpEntity<?> getPlanWeekly(@RequestParam LocalDate weekStartDate) {
+    public HttpEntity<WeeklyPlanRespDto> getPlanWeekly(@RequestParam LocalDate weekStartDate) {
         WeeklyPlanRespDto weeklyPlanRespDto = dailyPlanAppService.getWeeklyPlanFromWeekStartDateForAdmin(weekStartDate);
         return ResponseEntity.ok(weeklyPlanRespDto);
     }

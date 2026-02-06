@@ -177,6 +177,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
+    @Transactional
     public void cancelBookByAdmin(BookDto bookDto) {
         LocalDate date = bookDto.date();
         List<Long> timeSlotIdss = bookDto.timeSlotsId();

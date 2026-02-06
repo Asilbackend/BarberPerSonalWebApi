@@ -20,6 +20,7 @@ import uz.anvarovich.barber_personal_website_api.services.domain.weekly_plan.Wee
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
@@ -77,10 +78,11 @@ public class WeeklyPlanAppServiceImpl implements WeeklyPlanAppService {
                 .existsByWeekStartDate(nextMonday);
         if (!exists) {
             List<User> admins = userService.findAllAdmin();
-            notificationService.notifyAdmin(
-                    "Keyingi hafta uchun plan yaratilmagan, Yaratib qo'yishni unutmang ☺",
-                    admins
-            );
+            String message = "Keyingi hafta uchun plan yaratilmagan!\n"
+                    + "Yaratib qo'yishni unutmang ☺\n"
+                    + "Hafta boshlanishi: " + nextMonday.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+            notificationService.notifyUsers(message, admins);
         }
     }
 }

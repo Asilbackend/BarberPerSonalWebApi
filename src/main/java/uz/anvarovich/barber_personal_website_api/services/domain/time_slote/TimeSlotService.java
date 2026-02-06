@@ -36,7 +36,7 @@ public interface TimeSlotService {
 
     List<TimeSlot> book(BookDto dto, boolean isAdmin);
 
-    void cancelBookByAdmin(BookDto bookDto);
+   void cancelBookByAdmin(BookDto bookDto);
 
     void cancelSlotsByUser(List<TimeSlot> timeSlotsByBookingId);
 

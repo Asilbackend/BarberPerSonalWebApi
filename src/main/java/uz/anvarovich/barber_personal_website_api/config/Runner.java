@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uz.anvarovich.barber_personal_website_api.dto.req_dto.CreateUserReqDto;
 import uz.anvarovich.barber_personal_website_api.entity.SystemSettings;
 import uz.anvarovich.barber_personal_website_api.entity.WeeklyPlan;
+import uz.anvarovich.barber_personal_website_api.entity.user.enums.Role;
 import uz.anvarovich.barber_personal_website_api.repository.SystemSettingsRepository;
 import uz.anvarovich.barber_personal_website_api.repository.UserRepository;
 import uz.anvarovich.barber_personal_website_api.repository.WeeklyPlanRepository;
@@ -50,17 +51,45 @@ public class Runner implements CommandLineRunner {
     }
 
     private void createIfNotSysTemSetting() {
-        if (systemSettingsRepository.findAll().isEmpty()) {
+        if (systemSettingsRepository.count() == 0) {
             SystemSettings systemSettings = new SystemSettings(7, LocalTime.of(9, 0), LocalTime.of(19, 0), 30);
             systemSettingsRepository.save(systemSettings);
         }
     }
 
     private void createIfNotAdminUsers() {
-        if (userRepository.findAll().isEmpty()) {
-            userService.createAdmin(new CreateUserReqDto("Asilbek O'ktamov", "998919207150", "admin200", "award200", "award200"));
-            userService.createUser(new CreateUserReqDto("1Asilbekjon User1", "998339207150", "user200", "award200", "award200"));
-            userService.createUser(new CreateUserReqDto("2Userjon User2", "998339207100", "user201", "award200", "award200"));
+
+        if (!userRepository.existsByRole(Role.ADMIN)) {
+
+            userService.createAdmin(
+                    new CreateUserReqDto(
+                            "Asilbek O'ktamov",
+                            "998919207150",
+                            "admin200",
+                            "award200",
+                            "award200"
+                    )
+            );
+
+            userService.createUser(
+                    new CreateUserReqDto(
+                            "Asilbekjon User1",
+                            "998339207150",
+                            "user200",
+                            "award200",
+                            "award200"
+                    )
+            );
+
+            userService.createUser(
+                    new CreateUserReqDto(
+                            "Userjon User2",
+                            "998339207100",
+                            "user201",
+                            "award200",
+                            "award200"
+                    )
+            );
         }
     }
 }

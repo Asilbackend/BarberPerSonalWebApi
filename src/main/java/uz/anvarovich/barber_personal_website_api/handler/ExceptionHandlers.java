@@ -130,10 +130,10 @@ public class ExceptionHandlers {
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
         printStackTrace(ex);
         ApiResponse<Object> response = new ApiResponse<>(
-                HttpStatus.BAD_REQUEST.value(),          // 400
+                HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(),
                 false,
-                "INVALID_ARGUMENT"                       // yoki ex.getClass().getSimpleName()
+                "INVALID_ARGUMENT"
         );
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

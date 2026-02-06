@@ -10,5 +10,9 @@ public interface BookingService {
 
     List<Booking> findAllCurrentUser();
 
-    void cancelById(Long bookingId);
+    List<Booking> findAllByDate(LocalDate date);
+
+    Booking findById(Long bookingId);
+
+    void cancel(Booking booking);
 }

@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Setter
 @Entity
 public class SystemSettings extends BaseEntity {
-    private Integer visibleDaysForUsers; //2,3,7,
+    private Integer visibleDaysForUsers; //2,3,7,14
     private LocalTime defaultWorkStartTime;
     private LocalTime defaultWorkEndTime;
     private Integer defaultSlotDurationMin;

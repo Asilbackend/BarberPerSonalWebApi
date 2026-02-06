@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.domain.system_setting_service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,11 @@ public class SystemSettingServiceImpl implements SystemSettingService {
 
     @Override
     public SystemSettingDto getCurrent() {
-        SystemSettings last = systemSettingsRepository.findAll().getLast();
-        return SystemSettingMapper.toDto(last);
+        return systemSettingsRepository.findTopByOrderByIdDesc()
+                .map(SystemSettingMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("System settings topilmadi"));
     }
+
 
     /*public SystemSettingDto getOld() {
         List<SystemSettings> all = systemSettingsRepository.findAll();

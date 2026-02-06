@@ -1,5 +1,6 @@
 package uz.anvarovich.barber_personal_website_api.services.domain.booking_service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,18 +47,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
-    public void cancelById(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking topilmadi"));
-        checkBookIsOwn(booking);
-        booking.setStatus(BookingStatus.CANCELLED);
-        bookingRepository.save(booking);
+    public List<Booking> findAllByDate(LocalDate date) {
+        return bookingRepository.findAllByDate(date);
     }
 
-    private void checkBookIsOwn(Booking booking) {
-        if (!booking.getUser().getId().equals(userService.getCurrentUserId())) {
-            throw new IllegalArgumentException("book not match to this user");
-        }
+    @Override
+    public Booking findById(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+    }
+
+    @Override
+    public void cancel(Booking booking) {
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
     }
 }
 

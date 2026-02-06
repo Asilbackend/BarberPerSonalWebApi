@@ -27,8 +27,11 @@ public class AdminBlockController {
             summary = "Kun uchun qoshimcha bandlik kiritish",
             description = """
                     Admin tomonidan tanlangan sanani to'liq bloklaydi.
-                    Ushbu kunda yangi buyurtmalar qabul qilinmaydi va mavjud buyurtmalar holati o'zgartirilmaydi.
-                    Faqat admin huquqiga ega foydalanuvchilar ishlatishi mumkin."""
+                    Ushbu kunda yangi buyurtmalar qabul qilinmaydi.
+                    
+                    shu kunda book qilgan barcha userlarning booki cancel boladi,
+                    uzurnoma uchun shu userlarga notification jonatiladi
+                    """
     )
     @PostMapping
     public HttpEntity<?> blockByAdmin(@RequestBody AdminBlockDto adminBlockDto) {

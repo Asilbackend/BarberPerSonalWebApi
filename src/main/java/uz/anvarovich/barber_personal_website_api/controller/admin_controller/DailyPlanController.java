@@ -40,7 +40,7 @@ public class DailyPlanController {
     }
 
     @GetMapping
-    public HttpEntity<?> getPlanDaily(@RequestParam LocalDate date) {
+    public HttpEntity<WeeklyPlanRespDto.DayDto> getPlanDaily(@RequestParam LocalDate date) {
         WeeklyPlanRespDto.DayDto dto = dailyPlanAppService.getDailyByDate(date, true);
         return ResponseEntity.ok(dto);
     }
